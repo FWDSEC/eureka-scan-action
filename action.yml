@@ -1,7 +1,5 @@
 name: "Eureka Scan"
 description: "Scan a repository with Eureka for vulnerabilities"
-runs:
-  using: "composite"
 inputs:
   args:
     description: "Additional Eureka CLI arguments"
@@ -10,26 +8,28 @@ inputs:
     description: "Enable Eureka scan results published as a comment to the associated GitHub pull request"
     required: false
     default: "true"
-steps:
-  - name: Login to Docker Registry
-    run: |
-      docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} ${EUREKA_REGISTRY_URL}
-    shell: bash
+runs:
+  using: "composite"
+  steps:
+    - name: Login to Docker Registry
+      run: |
+        docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} ${EUREKA_REGISTRY_URL}
+      shell: bash
 
-  - name: Pull down Eureka container
-    run: |
-      docker pull ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
-    shell: bash
+    - name: Pull down Eureka container
+      run: |
+        docker pull ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
+      shell: bash
 
-  - name: Run Eureka scan
-    shell: bash
-    run: |
-      docker run --rm --network host \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v "$(pwd)":/home/repo \
-        -e DIND_USER_HOME="$(pwd)" \
-        -e EUREKA_ENDPOINT="${EUREKA_ENDPOINT}" \
-        -e EUREKA_USER="${EUREKA_USER}" \
-        -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
-        -e PROFILE_INFO="${PROFILE_INFO}" \
-        ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG} ${{ inputs.args }}
+    - name: Run Eureka scan
+      shell: bash
+      run: |
+        docker run --rm --network host \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v "$(pwd)":/home/repo \
+          -e DIND_USER_HOME="$(pwd)" \
+          -e EUREKA_ENDPOINT="${EUREKA_ENDPOINT}" \
+          -e EUREKA_USER="${EUREKA_USER}" \
+          -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
+          -e PROFILE_INFO="${PROFILE_INFO}" \
+          ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
