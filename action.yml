@@ -20,7 +20,7 @@ runs:
         echo "Eureka scan did not complete!" > $TMPDIR/summary.log
         echo "report_file=$TMPDIR/summary.log" >> "$GITHUB_OUTPUT"        
         echo "tmpdir=$TMPDIR" >> "$GITHUB_OUTPUT"
-        
+    
     - name: Pull down Eureka container
       shell: bash
       run: |
@@ -33,7 +33,7 @@ runs:
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v "$(pwd)":/home/repo \
           -e DIND_USER_HOME="$(pwd)" \
-          -v "${{ steps.report_prep.output.tmpdir }}:/tmp/eureka" \
+          -v "${{ steps.report_prep.outputs.tmpdir }}:/tmp/eureka" \
           -e EUREKA_OUTPUT=/tmp/eureka/summary.log \
           -e EUREKA_ENDPOINT="${EUREKA_ENDPOINT}" \
           -e EUREKA_USER="${EUREKA_USER}" \
@@ -45,4 +45,4 @@ runs:
       if: always()
       uses: mshick/add-pr-comment@v2
       with:
-        message-path: ${{ steps.report_prep.output.report_file }}
+        message-path: ${{ steps.report_prep.outputs.report_file }}
