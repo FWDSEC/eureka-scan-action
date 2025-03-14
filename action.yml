@@ -4,22 +4,18 @@ inputs:
   args:
     description: "Additional Eureka DevSecOps CLI arguments"
     required: false
-  report:
-    description: "Enable Eureka DevSecOps scan results published as a comment to the associated GitHub pull request"
-    required: false
-    default: "true"
 runs:
   using: "composite"
   steps:
     - name: Login to the Docker Registry
+      shell: bash
       run: |
         docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} ${EUREKA_REGISTRY_URL}
-      shell: bash
 
     - name: Pull down Eureka container
+      shell: bash
       run: |
         docker pull ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
-      shell: bash
 
     - name: Run Eureka scan
       shell: bash
@@ -32,4 +28,4 @@ runs:
           -e EUREKA_USER="${EUREKA_USER}" \
           -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
           -e PROFILE_INFO="${PROFILE_INFO}" \
-          ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
+          ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG} 
