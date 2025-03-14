@@ -20,7 +20,7 @@ To use the Eureka DevSecOps GitHub Action, you must generate values for the requ
 - **EUREKA_ENDPOINT**
 - **EUREKA_USER**
 - **EUREKA_PASSWORD**
-- **PROFILE_INFO** 
+- **PROFILE_INFO**
 
 For more detailed information on required secret variables and generating them from the Eureka Portal, see the [Eureka DevSecOps User Guide]()
 
@@ -35,9 +35,6 @@ Copy the following snippet below and add it to the `jobs` section of your GitHub
       - name: Run Eureka Scan
         uses: FWDSEC/eureka-scan-action@latest
         env:
-        EUREKA_REGISTRY_URL: "eurekahubprodagentacr.azurecr.io"
-          EUREKA_REPO: " fwdsec/eureka"
-          EUREKA_TAG: "latest"
           EUREKA_ENDPOINT: ${{ secrets.EUREKA_ENDPOINT }}
           EUREKA_USER: ${{ secrets.EUREKA_USER }}
           EUREKA_PASSWORD: ${{ secrets.EUREKA_PASSWORD }}
