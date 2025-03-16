@@ -26,29 +26,29 @@ runs:
         echo "report_file=$TMPDIR/summary.log" >> "$GITHUB_OUTPUT"        
         echo "tmpdir=$TMPDIR" >> "$GITHUB_OUTPUT"
     
-    - name: Pull down Eureka container
+    - name: Set GitHub pull request Eureka scan report docker flags
       shell: bash
+      if : inputs.pr_report == 'true'
       run: |
-        docker pull ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
+        if [[ "${{ inputs.pr_report }}" == "true" ]]; then
+          echo "PR_REPORT_DOCKER_FLAGS=-v '${{ steps.report_prep.outputs.tmpdir }}:/tmp/eureka' -e EUREKA_OUTPUT=/tmp/eureka/summary.log" >> $GITHUB_ENV
+        else
+          echo "PR_REPORT_DOCKER_FLAGS=" >> $GITHUB_ENV
+        fi
 
     - name: Run Eureka scan
       shell: bash
       run: |
-        PR_REPORT_DOCKER_FLAGS=""
-        if [[ "${{ inputs.pr_report }}" == "true" ]]; then
-          PR_REPORT_DOCKER_FLAGS="-v \"${{ steps.report_prep.outputs.tmpdir }}:/tmp/eureka\" -e EUREKA_OUTPUT=/tmp/eureka/summary.log"
-        fi
-
         docker run --rm --network host \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v "$(pwd)":/home/repo \
           -e DIND_USER_HOME="$(pwd)" \
-          ${PR_REPORT_DOCKER_FLAGS} \
+          $PR_REPORT_DOCKER_FLAGS \
           -e EUREKA_ENDPOINT="${EUREKA_ENDPOINT}" \
           -e EUREKA_USER="${EUREKA_USER}" \
           -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
           -e PROFILE_INFO="${PROFILE_INFO}" \
-          ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG} 
+          ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
 
     - name: Write Eureka report to comment
       if: inputs.pr_report == 'true'
