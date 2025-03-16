@@ -54,7 +54,7 @@ runs:
           ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
 
     - name: Write Eureka report to comment
-      if: inputs.pr_report == 'true'
+      if: ${{ inputs.pr_report == 'true' && always() }}
       uses: mshick/add-pr-comment@v2
       with:
         message-path: ${{ steps.report_prep.outputs.report_file }}
