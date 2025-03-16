@@ -4,6 +4,10 @@ inputs:
   args:
     description: "Additional Eureka DevSecOps CLI arguments"
     required: false
+  pr_report:
+    description: "Enable a Eureka scan report as a comment in the pull request"
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -15,6 +19,7 @@ runs:
     - name: Preparing summary report
       shell: bash
       id: report_prep
+      if: inputs.pr_report == 'true'
       run: |
         TMPDIR=$(mktemp -d)
         echo "Eureka scan did not complete!" > $TMPDIR/summary.log
@@ -42,7 +47,7 @@ runs:
           ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG} 
 
     - name: Write Eureka report to comment
-      if: always()
+      if: inputs.pr_report == 'true'
       uses: mshick/add-pr-comment@v2
       with:
         message-path: ${{ steps.report_prep.outputs.report_file }}
