@@ -34,12 +34,16 @@ runs:
     - name: Run Eureka scan
       shell: bash
       run: |
+        PR_REPORT_DOCKER_FLAGS=""
+        if [[ "${{ inputs.pr_report }}" == "true" ]]; then
+          PR_REPORT_DOCKER_FLAGS="-v \"${{ steps.report_prep.outputs.tmpdir }}:/tmp/eureka\" -e EUREKA_OUTPUT=/tmp/eureka/summary.log"
+        fi
+
         docker run --rm --network host \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v "$(pwd)":/home/repo \
           -e DIND_USER_HOME="$(pwd)" \
-          -v "${{ steps.report_prep.outputs.tmpdir }}:/tmp/eureka" \
-          -e EUREKA_OUTPUT=/tmp/eureka/summary.log \
+          ${PR_REPORT_DOCKER_FLAGS} \
           -e EUREKA_ENDPOINT="${EUREKA_ENDPOINT}" \
           -e EUREKA_USER="${EUREKA_USER}" \
           -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
