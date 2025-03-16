@@ -34,7 +34,7 @@ runs:
         REPORT_TMPDIR="${{ steps.report_prep.outputs.tmpdir }}"
 
         if [[ "$INPUT_PR_REPORT" == "true" ]]; then
-          echo "PR_REPORT_DOCKER_FLAGS=-v '${REPORT_TMPDIR}:/tmp/eureka' -e EUREKA_OUTPUT=/tmp/eureka/summary.log" >> $GITHUB_ENV
+          echo "PR_REPORT_DOCKER_FLAGS=-v "${REPORT_TMPDIR}:/tmp/eureka" -e EUREKA_OUTPUT=/tmp/eureka/summary.log" >> $GITHUB_ENV
         else
           echo "PR_REPORT_DOCKER_FLAGS=" >> $GITHUB_ENV
         fi
