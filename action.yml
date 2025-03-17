@@ -1,7 +1,7 @@
 name: "Eureka DevSecops"
 description: "Scan your code with Eureka DevSecOps to discover potential security risks and vulnerabilities"
 inputs:
-  pr_report:
+  enable_pr_scan_report:
     description: "Enable a Eureka scan report as a comment in the pull request"
     required: false
     default: "false"
@@ -16,7 +16,7 @@ runs:
     - name: Preparing summary report
       shell: bash
       id: report_prep
-      if: inputs.pr_report == 'true'
+      if: inputs.enable_pr_scan_report == 'true'
       run: |
         TMPDIR=$(mktemp -d)
         echo "Eureka scan did not complete!" > $TMPDIR/summary.log
@@ -25,9 +25,9 @@ runs:
     
     - name: Set GitHub pull request Eureka scan report docker flags
       shell: bash
-      if : inputs.pr_report == 'true'
+      if : inputs.enable_pr_scan_report == 'true'
       run: |
-        INPUT_PR_REPORT="${{ inputs.pr_report }}"
+        INPUT_PR_REPORT="${{ inputs.enable_pr_scan_report }}"
         REPORT_TMPDIR="${{ steps.report_prep.outputs.tmpdir }}"
 
         if [[ "$INPUT_PR_REPORT" == "true" ]]; then
@@ -51,7 +51,7 @@ runs:
           ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
 
     - name: Write Eureka report to comment
-      if: ${{ inputs.pr_report == 'true' && always() }}
+      if: ${{ inputs.enable_pr_scan_report == 'true' && always() }}
       uses: mshick/add-pr-comment@v2
       with:
         message-path: ${{ steps.report_prep.outputs.report_file }}
