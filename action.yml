@@ -1,6 +1,5 @@
-name: "Eureka DevSecops"
+name: "Eureka DevSecOps"
 description: "Scan your code with Eureka DevSecOps to discover potential security risks and vulnerabilities"
-
 runs:
   using: "composite"
   steps:
