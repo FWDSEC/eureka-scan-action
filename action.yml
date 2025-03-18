@@ -1,35 +1,18 @@
 name: "Eureka DevSecops"
 description: "Scan your code with Eureka DevSecOps to discover potential security risks and vulnerabilities"
 
-inputs:
-  args:
-    description: "Additional Eureka DevSecOps CLI arguments"
-    required: false
-  eureka_registry_url:
-    description: "Eureka container registry URL"
-    required: false
-    default: "eurekahubprodagentacr.azurecr.io"
-  eureka_repo:
-    description: "Eureka repository name"
-    required: false
-    default: "fwdsec/eureka"
-  eureka_tag:
-    description: "Eureka container tag"
-    required: false
-    default: "latest"
-
 runs:
   using: "composite"
   steps:
     - name: Login to the Docker Registry
       shell: bash
       run: |
-        docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} ${{ inputs.eureka_registry_url }}
+        docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} eurekahubprodagentacr.azurecr.io
 
     - name: Pull down Eureka container
       shell: bash
       run: |
-        docker pull ${{ inputs.eureka_registry_url }}/${{ inputs.eureka_repo }}:${{ inputs.eureka_tag }}
+        docker pull eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
 
     - name: Run Eureka scan
       shell: bash
@@ -42,4 +25,4 @@ runs:
           -e EUREKA_USER="${EUREKA_USER}" \
           -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
           -e PROFILE_INFO="${PROFILE_INFO}" \
-          ${{ inputs.eureka_registry_url }}/${{ inputs.eureka_repo }}:${{ inputs.eureka_tag }}
+          eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
