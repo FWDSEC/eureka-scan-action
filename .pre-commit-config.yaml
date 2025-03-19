@@ -8,3 +8,4 @@ repos:
     rev: v0.6.0
     hooks:
       - id: action-validator
+        files: ^(\.github/workflows/.yml|action\.yml)$
