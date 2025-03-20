@@ -1,4 +1,4 @@
-name: "Eureka DevSecops"
+name: "Eureka DevSecOps"
 description: "Scan your code with Eureka DevSecOps to discover potential security risks and vulnerabilities"
 inputs:
   enable_pr_scan_report:
@@ -11,7 +11,7 @@ runs:
     - name: Login to the Docker Registry
       shell: bash
       run: |
-        docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} ${EUREKA_REGISTRY_URL}
+        docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} eurekahubprodagentacr.azurecr.io
 
     - name: Preparing summary report
       shell: bash
@@ -36,6 +36,11 @@ runs:
           echo "PR_REPORT_DOCKER_FLAGS=" >> $GITHUB_ENV
         fi
 
+    - name: Pull down Eureka container
+      shell: bash
+      run: |
+        docker pull eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
+
     - name: Run Eureka scan
       shell: bash
       run: |
@@ -48,7 +53,7 @@ runs:
           -e EUREKA_USER="${EUREKA_USER}" \
           -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
           -e PROFILE_INFO="${PROFILE_INFO}" \
-          ${EUREKA_REGISTRY_URL}/${EUREKA_REPO}:${EUREKA_TAG}
+          eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
 
     - name: Write Eureka report to comment
       if: ${{ inputs.enable_pr_scan_report == 'true' && always() }}
