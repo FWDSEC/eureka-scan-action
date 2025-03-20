@@ -55,8 +55,15 @@ runs:
           -e PROFILE_INFO="${PROFILE_INFO}" \
           eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
 
+    - name: Convert Log to Markdown
+      uses: ./.github/actions/convert-log-to-md
+      with:
+        log_file:  ${{ steps.report_prep.outputs.report_file }}
+        output_file: "${{ steps.report_prep.outputs.tmpdir }}/output.md"
+
+
     - name: Write Eureka report to comment
       if: ${{ inputs.enable_pr_scan_report == 'true' && always() }}
       uses: mshick/add-pr-comment@v2
       with:
-        message-path: ${{ steps.report_prep.outputs.report_file }}
+        message-path: "${{ steps.report_prep.outputs.tmpdir }}/output.md"

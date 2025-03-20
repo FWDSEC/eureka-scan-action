@@ -1,0 +1,73 @@
+name: Convert Log to Markdown
+description: Converts a log file into a Markdown-formatted report.
+
+inputs:
+  log_file:
+    description: "Path to the log file"
+    required: true
+    default: "output.log"
+  output_file:
+    description: "Path to the output markdown file"
+    required: true
+    default: "output.md"
+
+outputs:
+  markdown_file:
+    description: "Generated Markdown file"
+    value: ${{ inputs.output_file }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Convert Log to Markdown
+      shell: bash
+      run: |
+        LOG_FILE="${{ inputs.log_file }}"
+        OUTPUT_FILE="${{ inputs.output_file }}"
+
+        echo "# Eureka Scan Report" > $OUTPUT_FILE
+        echo "" >> $OUTPUT_FILE
+
+        # Extract and format scanner version
+        awk '/^==== Eureka Scan / {print "### " $0}' "$LOG_FILE" >> $OUTPUT_FILE
+        echo "" >> $OUTPUT_FILE
+
+        # Extract errors
+        echo "## Errors" >> $OUTPUT_FILE
+        awk '/~~ Errors:/,/^\]/' "$LOG_FILE" | sed 's/~~ //g' | tee -a $OUTPUT_FILE
+        echo "" >> $OUTPUT_FILE
+
+        # Extract scan summary
+        echo "## Scan Summary" >> $OUTPUT_FILE
+        awk '/Scan Results: / {print "**"$0"**"}' "$LOG_FILE" >> $OUTPUT_FILE
+        echo "" >> $OUTPUT_FILE
+
+        # Extract and format table dynamically
+        echo "## Scanner Results" >> $OUTPUT_FILE
+        echo "| Scanner  | Running Time | Required | Status  | Issues Found |" >> $OUTPUT_FILE
+        echo "|----------|-------------|----------|---------|--------------|" >> $OUTPUT_FILE
+
+        awk -F '│' '
+            NR > 1 && NF > 4 {  
+                gsub(/^[ \t]+|[ \t]+$/, "", $2);
+                gsub(/^[ \t]+|[ \t]+$/, "", $4);
+                gsub(/^[ \t]+|[ \t]+$/, "", $6);
+                gsub(/^[ \t]+|[ \t]+$/, "", $8);
+                gsub(/^[ \t]+|[ \t]+$/, "", $10);
+                
+                if ($2 != "" && $4 != "" && $6 != "" && $8 != "" && $10 != "") {
+                    print "| " $2 " | " $4 " | " $6 " | " $8 " | " $10 " |"
+                }
+            }
+        ' "$LOG_FILE" >> $OUTPUT_FILE
+
+        echo "" >> $OUTPUT_FILE
+
+        # Extract scan results link
+        scan_link=$(grep -o 'https://eurekahub[^ ]*' "$LOG_FILE")
+        echo "🔗 **[View Scan Results]($scan_link)**" >> $OUTPUT_FILE
+        echo "" >> $OUTPUT_FILE
+
+        # Add notes section
+        echo "## Notes" >> $OUTPUT_FILE
+        awk '/Notes:/,/Need help\?/' "$LOG_FILE" | sed 's/Notes://g' | tee -a $OUTPUT_FILE
