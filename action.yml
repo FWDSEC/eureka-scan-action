@@ -8,6 +8,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout Repository (Needed for Sub-Actions)
+      uses: actions/checkout@v4
+      
     - name: Login to the Docker Registry
       shell: bash
       run: |
