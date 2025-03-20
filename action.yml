@@ -56,6 +56,7 @@ runs:
           eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
 
     - name: Convert Log to Markdown
+      if: ${{ inputs.enable_pr_scan_report == 'true' && always() }}
       uses: ./.github/actions/convert-report-to-md
       with:
         log_file:  ${{ steps.report_prep.outputs.report_file }}
