@@ -19,6 +19,9 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
     - name: Convert Log to Markdown
       shell: bash
       run: |
