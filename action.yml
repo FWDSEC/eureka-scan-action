@@ -17,12 +17,12 @@ inputs:
     description: "Veracode SAST/SCA/Pipeline API key secret"
     required: false
     default: ""
-  zap_username:
-    description: "ZAP API username"
+  dast_username:
+    description: "Username credential for DAST scanners such as Zap"
     required: false
     default: ""
-  zap_password:
-    description: "ZAP API password"
+  dast_password:
+    description: "Password credential for DAST scanners such as Zap"
     required: false
     default: ""
 runs:
@@ -48,8 +48,8 @@ runs:
           -e SONAR_USER_TOKEN="${{ inputs.sonarqube_user_token }}" \
           -e VERACODE_API_KEY_ID="${{ inputs.veracode_api_key_id }}" \
           -e VERACODE_API_KEY_SECRET="${{ inputs.veracode_api_key_secret }}" \
-          -e DAST_USERNAME="${{ inputs.zap_username }}" \
-          -e DAST_PASSWORD="${{ inputs.zap_password }}" \
+          -e DAST_USERNAME="${{ inputs.dast_username }}" \
+          -e DAST_PASSWORD="${{ inputs.dast_password }}" \
           -e DIND_USER_HOME="$(pwd)" \
           -e EUREKA_ENDPOINT="${EUREKA_ENDPOINT}" \
           -e EUREKA_USER="${EUREKA_USER}" \
