@@ -1,5 +1,30 @@
 name: "Eureka DevSecOps"
 description: "Scan your code with Eureka DevSecOps to discover potential security risks and vulnerabilities"
+inputs:
+  synk_token:
+    description: "Synk scanner API token"
+    required: false
+    default: ""
+  sonarqube_token:
+    description: "SonarQube user security token"
+    required: false
+    default: ""
+  veracode_api_key_id:
+    description: "Veracode SAST/SCA/Pipeline API key ID"
+    required: false
+    default: ""
+  veracode_api_key_secret:
+    description: "Veracode SAST/SCA/Pipeline API key secret"
+    required: false
+    default: ""
+  zap_username:
+    description: "ZAP API username"
+    required: false
+    default: ""
+  zap_password:
+    description: "ZAP API password"
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -19,6 +44,12 @@ runs:
         docker run --rm --network host \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v "$(pwd)":/home/repo \
+          -e SNYK_TOKEN="${{ inputs.snyk_token }}" \
+          -e SONARQUBE_TOKEN="${{ inputs.sonarqube_token }}" \
+          -e VERACODE_API_KEY_ID="${{ inputs.veracode_api_key_id }}" \
+          -e VERACODE_API_KEY_SECRET="${{ inputs.veracode_api_key_secret }}" \
+          -e DAST_USERNAME="${{ inputs.zap_username }}" \
+          -e DAST_PASSWORD="${{ inputs.zap_password }}" \
           -e DIND_USER_HOME="$(pwd)" \
           -e EUREKA_ENDPOINT="${EUREKA_ENDPOINT}" \
           -e EUREKA_USER="${EUREKA_USER}" \
