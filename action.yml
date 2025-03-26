@@ -1,8 +1,8 @@
 name: "Eureka DevSecOps"
 description: "Scan your code with Eureka DevSecOps to discover potential security risks and vulnerabilities"
 inputs:
-  synk_token:
-    description: "Synk scanner API token"
+  snyk_token:
+    description: "Snyk scanner API token"
     required: false
     default: ""
   sonarqube_user_token:
