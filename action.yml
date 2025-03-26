@@ -5,7 +5,7 @@ inputs:
     description: "Synk scanner API token"
     required: false
     default: ""
-  sonarqube_token:
+  sonarqube_user_token:
     description: "SonarQube user security token"
     required: false
     default: ""
@@ -45,7 +45,7 @@ runs:
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v "$(pwd)":/home/repo \
           -e SNYK_TOKEN="${{ inputs.snyk_token }}" \
-          -e SONARQUBE_TOKEN="${{ inputs.sonarqube_token }}" \
+          -e SONAR_USER_TOKEN="${{ inputs.sonarqube_user_token }}" \
           -e VERACODE_API_KEY_ID="${{ inputs.veracode_api_key_id }}" \
           -e VERACODE_API_KEY_SECRET="${{ inputs.veracode_api_key_secret }}" \
           -e DAST_USERNAME="${{ inputs.zap_username }}" \
