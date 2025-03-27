@@ -17,13 +17,13 @@ DevSecOps to get started, visit the official [Eureka DevSecOps website](https://
 
 To use the Eureka DevSecOps GitHub Action, you must generate values for the required secrets and repository variables from the Eureka Portal listed below. Once generated, add each secret and repository variable name and its corresponding value to your repository’s GitHub Actions secrets under *Settings* > *Secrets and variables* > *Actions*.
 
-Secret Variables:
+Secrets:
 
-- **EUREKA_ENDPOINT**
+- **EUREKA_ENDPOINT** 
 - **EUREKA_USER**
 - **EUREKA_PASSWORD**
 
-Repository Variables:
+Repository variables:
 
 - **PROFILE_INFO**
 
@@ -49,6 +49,22 @@ To integrate the Eureka DevSecOps Github Action into your GitHub workflow, add t
           PROFILE_INFO: ${{ vars.PROFILE_INFO }} 
 ```
 
+## Input arguments
+
+Below is a table of input arguments that can be optionally provided to the Eureka DevSecOps GitHub action in your workflow.
+
+Specific scanners that are enabled may require API tokens or credentials passed as additional input arguments. Refer to the [Eureka DevSecOps User Guide](https://eurekadocs.netlify.app/) for more information on the required values to run these scanners.
+
+| Input argument            | Description                                                                                                  |
+|---------------------------|--------------------------------------------------------------------------------------------------------------|
+| `enable_pr_scan_report`   | A boolean to enable the Eureka scan report pull request feature                                              |
+| `snyk_token`              | A Snyk API token is required if Snyk is enabled                                                              |
+| `sonarqube_user_token`    | A SonarQube user security token is required if SonarQube scanner is enabled.                                 |
+| `veracode_api_key_id`     | A Veracode SAST/SCA/Pipeline API key ID is required if Veracode SCA, SAST or Pipeline scanner is enabled     |
+| `veracode_api_key_secret` | A Veracode SAST/SCA/Pipeline API key secret is required if Veracode SCA, SAST or Pipeline scanner is enabled |
+| `dast_username`           | A username credential for DAST scanners (Required if Zap scanner is enabled)                                 |
+| `dast_password`           | A password credential for DAST scanners (Required if Zap scanner is enabled)                                 |
+
 ### Enabling Pull Request Scan Reports (Optional)
 
 To generate a Eureka scan report as a comment on an associated pull request, include the `enable_pr_scan_report` input parameter set to `true`:
@@ -72,6 +88,114 @@ eureka-scan:
 ```
 
 - `enable_pr_scan_report: true` enables the Eureka scan report as a comment on the pull request.
+
+## Workflow Examples for scanner inputs
+
+Below are Workflow examples for scanners requiring additional inputs—only required if those scanners are enabled in your Eureka profile.
+
+If multiple scanners that need additional inputs are enabled in your Eureka Profile, you can provide all required input arguments together within a single workflow.
+
+<details>
+  <summary>Eureka workflow with Snyk</summary>
+
+```yml
+eureka-scan:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v4
+        
+    - name: Run Eureka Scan
+      uses: FWDSEC/eureka-scan-action@main
+      env:
+        EUREKA_ENDPOINT: ${{ secrets.EUREKA_ENDPOINT }}
+        EUREKA_USER: ${{ secrets.EUREKA_USER }}
+        EUREKA_PASSWORD: ${{ secrets.EUREKA_PASSWORD }}
+        PROFILE_INFO: ${{ vars.PROFILE_INFO }}
+      with:
+        snyk_token: ${{ vars.SNYK_TOKEN }} 
+```
+
+Ensure that the Snyk API token is configured as a secret called `SNYK_TOKEN`.
+</details>
+
+<details>
+  <summary>Eureka workflow with SonarQube</summary>
+
+```yml
+eureka-scan:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v4
+        
+    - name: Run Eureka Scan
+      uses: FWDSEC/eureka-scan-action@main
+      env:
+        EUREKA_ENDPOINT: ${{ secrets.EUREKA_ENDPOINT }}
+        EUREKA_USER: ${{ secrets.EUREKA_USER }}
+        EUREKA_PASSWORD: ${{ secrets.EUREKA_PASSWORD }}
+        PROFILE_INFO: ${{ vars.PROFILE_INFO }}
+      with:
+        sonarqube_user_token: ${{ vars.SONARQUBE_TOKEN }} 
+```
+
+Ensure that the SonarQube user security token is configured as a secret called `SONARQUBE_TOKEN`.
+</details>
+
+<details>
+  <summary>Eureka workflow for Veracode SAST/SCA/Pipeline</summary>
+
+```yml
+eureka-scan:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v4
+        
+    - name: Run Eureka Scan
+      uses: FWDSEC/eureka-scan-action@main
+      env:
+        EUREKA_ENDPOINT: ${{ secrets.EUREKA_ENDPOINT }}
+        EUREKA_USER: ${{ secrets.EUREKA_USER }}
+        EUREKA_PASSWORD: ${{ secrets.EUREKA_PASSWORD }}
+        PROFILE_INFO: ${{ vars.PROFILE_INFO }}
+      with:
+        veracode_api_key_id: ${{ vars.VERACODE_API_KEY_ID }}
+        veracode_api_key_secret: ${{ vars.VERACODE_API_KEY_SECRET }}
+```
+
+Ensure that the Veracode API key ID is configured as a secret called `VERACODE_API_KEY_ID`.
+Ensure that the Veracode API key secret is configured as a secret called `VERACODE_API_KEY_SECRET`.
+
+</details>
+
+<details>
+  <summary>Eureka workflow for DAST scanners (Zap)</summary>
+
+```yml
+eureka-scan:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v4
+        
+    - name: Run Eureka Scan
+      uses: FWDSEC/eureka-scan-action@main
+      env:
+        EUREKA_ENDPOINT: ${{ secrets.EUREKA_ENDPOINT }}
+        EUREKA_USER: ${{ secrets.EUREKA_USER }}
+        EUREKA_PASSWORD: ${{ secrets.EUREKA_PASSWORD }}
+        PROFILE_INFO: ${{ vars.PROFILE_INFO }}
+      with:
+        dast_username: ${{ vars.DAST_USERNAME }}
+        dast_password: ${{ vars.DAST_PASSWORD }}
+```
+
+Ensure that the DAST username is configured as a secret called `DAST_USERNAME`.
+Ensure that the DAST password is configured as a secret called `DAST_PASSWORD`.
+
+</details>
 
 ### Example: Full Github Workflow with Eureka DevSecOps GitHub Action
 
