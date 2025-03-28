@@ -11,7 +11,7 @@ runs:
     - name: Login to the Docker Registry
       shell: bash
       run: |
-        docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} eurekahubprodagentacr.azurecr.io
+        docker login -u ${EUREKA_USER} -p ${EUREKA_PASSWORD} fwdsecuritystaging.azurecr.io
 
     - name: Preparing summary report
       shell: bash
@@ -39,7 +39,7 @@ runs:
     - name: Pull down Eureka container
       shell: bash
       run: |
-        docker pull eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
+        docker pull fwdsecuritystaging.azurecr.io/fwdsec/eureka:latest
 
     - name: Run Eureka scan
       shell: bash
