@@ -5,7 +5,6 @@ inputs:
     description: "Enable a Eureka scan report as a comment in the pull request"
     required: false
     default: "false"
-inputs:
   snyk_token:
     description: "Snyk scanner API token"
     required: false
@@ -84,7 +83,7 @@ runs:
           -e EUREKA_USER="${EUREKA_USER}" \
           -e EUREKA_PASSWORD="${EUREKA_PASSWORD}" \
           -e PROFILE_INFO="${PROFILE_INFO}" \
-          eurekahubprodagentacr.azurecr.io/fwdsec/eureka:latest
+          fwdsecuritystaging.azurecr.io/fwdsec/eureka:latest
 
     - name: Write Eureka report to comment
       if: ${{ inputs.enable_pr_scan_report == 'true' && always() }}
