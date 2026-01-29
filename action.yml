@@ -32,7 +32,6 @@
 #    with:
 #      scanners: "opengrep,gitleaks,grype"
 #      token: ${{ secrets.EUREKA_AGENT_TOKEN }}
-#      profile: ${{ vars.EUREKA_PROFILE }}
 #
 #  Example 3 — Upload Findings to Eureka ASPM and GHAS
 #  -----------------------------------------------------------
@@ -40,7 +39,6 @@
 #    with:
 #      scanners: "opengrep,gitleaks,grype"
 #      token: ${{ secrets.EUREKA_AGENT_TOKEN }}
-#      profile: ${{ vars.EUREKA_PROFILE }}
 #      export_findings_to_ghas: "true"
 #
 #  Inputs:
@@ -48,7 +46,6 @@
 #    scanners                 Comma-separated list of scanners (default: "all")
 #    export_findings_to_ghas  Upload SARIF results to GHAS (default: "false")
 #    token                    Eureka API token (optional)
-#    profile                  Eureka profile name (optional)
 #
 #  📤 Output:
 #    report                   Consolidated SARIF report (string)
@@ -82,11 +79,6 @@ inputs:
 
   token:
     description: "Optional Eureka ASPM auth token, used to upload findings to the Eureka ASPM platform. Can be left out if you don't want to upload findings to Eureka ASPM."
-    required: false
-    default: ""
-
-  profile:
-    description: "Optional Eureka ASPM profile, used to associate findings to a specific profile in the Eureka ASPM platform."
     required: false
     default: ""
 
@@ -145,7 +137,6 @@ runs:
         SCANNERS: ${{ inputs.scanners }}
         TARGET: ${{ inputs.folder_to_scan }}
         EUREKA_AGENT_TOKEN: ${{ inputs.token }}
-        EUREKA_PROFILE: ${{ inputs.profile }}
       shell: bash
       run: radar scan -s "${SCANNERS}" -o report.sarif "${TARGET}"
 

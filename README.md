@@ -42,7 +42,7 @@ This GitHub Action lets you run Radar CLI directly in your CI/CD pipeline. Detec
 5. Optionally uploads results to:
 
    * GitHub Advanced Security
-   * Eureka ASPM (if `EUREKA_AGENT_TOKEN` and `EUREKA_PROFILE` are provided)
+   * Eureka ASPM (if `EUREKA_AGENT_TOKEN` is provided)
 
 ---
 
@@ -98,12 +98,10 @@ jobs:
         with:
           scanners: "opengrep,gitleaks,grype"
           token: ${{ secrets.EUREKA_AGENT_TOKEN }}
-          profile: ${{ vars.EUREKA_PROFILE }}
 ```
 
 > [!IMPORTANT]
 > * `EUREKA_AGENT_TOKEN` auth token is required to integrate with the Eureka API.
-> * `EUREKA_PROFILE` tags findings with your Eureka organization and application.
 > * If you omit either, no uploads occur.
 
 ---
@@ -126,13 +124,11 @@ jobs:
         with:
           scanners: "opengrep,gitleaks,grype"
           token: ${{ secrets.EUREKA_AGENT_TOKEN }}
-          profile: ${{ vars.EUREKA_PROFILE }}
           export_findings_to_ghas: "true"
 ```
 
 > [!IMPORTANT]
 > * `EUREKA_AGENT_TOKEN` auth token is required to integrate with the Eureka API.
-> * `EUREKA_PROFILE` tags findings with your Eureka organization and application.
 > * If you omit either, no uploads occur.
 
 ---
@@ -145,7 +141,6 @@ jobs:
 | `scanners`                | Comma-separated list of scanners to run (`"all"` runs all).                   | Optional  | `"opengrep,gitleaks,grype"` | `"opengrep,gitleaks"`                 |
 | `export_findings_to_ghas` | Upload findings to GitHub Advanced Security. Requires GHAS enabled.           | Optional  | `"false"`                   | `"true"`                              |
 | `token`                   | **EUREKA_AGENT_TOKEN** — optional. Enables uploads to Eureka ASPM.            | Optional  | `""`                        | `"${{ secrets.EUREKA_AGENT_TOKEN }}"` |
-| `profile`                 | **EUREKA_PROFILE** — optional. Associates results with an app or environment. | Optional  | `""`                        | `"${{ vars.EUREKA_PROFILE }}"`                       |
 
 ---
 
@@ -173,14 +168,14 @@ Example:
 **Summary:** Radar CLI **doesn't** upload any vulnerability findings by default - only if you explicitly enable uploads to Eureka ASPM. Radar CLI collects minimal anonymous install and usage metrics to help us understand how the product is used and to help us make the product better. This helps us understand adoption, performance, and reliability across environments. 
 
 ### Uploading findings (opt-in)
-If you set `EUREKA_AGENT_TOKEN` and `EUREKA_PROFILE` environment variables, only then will Radar CLI transmit vulnerability findings (SARIF).
+If you set the `EUREKA_AGENT_TOKEN` environment variable, only then will Radar CLI transmit vulnerability findings (SARIF).
 
 ### Quick reference
 
 | Scenario                                           | What gets sent |
 |---------------------------------------------------|----------------|
 | Run `radar scan` locally with **no credentials**  | Local run. No vulnerability findings sent anywhere. Minimal anonymous install/usage metrics only (see above) |
-| Run with `EUREKA_AGENT_TOKEN` and `EUREKA_PROFILE` environment variables set | Vulnerability findings (SARIF) plus anonymous install/usage metrics are uploaded |
+| Run with `EUREKA_AGENT_TOKEN` environment variable set | Vulnerability findings (SARIF) plus anonymous install/usage metrics are uploaded |
 | Air-gapped or offline environments                 | Anonymous install/usage metrics are dropped; no vulnerability findings are transmitted |
 
 ---
@@ -190,7 +185,7 @@ If you set `EUREKA_AGENT_TOKEN` and `EUREKA_PROFILE` environment variables, only
 | Issue                                             | Possible Cause                                               | Solution                                                                                                            |
 | ------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | **`report.sarif` not found**                    | The scan failed or didn’t produce output.                    | Check your workflow logs for errors from Radar CLI. Ensure the `folder_to_scan` path exists and scanners are valid. |
-| **No findings uploaded to Eureka**             | Missing or invalid `EUREKA_AGENT_TOKEN` or `EUREKA_PROFILE`. | Make sure your token is stored as a GitHub Secret and your profile matches one in Eureka ASPM.                      |
+| **No findings uploaded to Eureka**             | Missing or invalid `EUREKA_AGENT_TOKEN`. | Make sure your token is stored as a GitHub Secret.                      |
 | **“Permission denied” when uploading to GHAS** | Repository doesn’t have GitHub Advanced Security enabled.    | Enable GHAS under your repo’s *Security → Code scanning alerts* settings.                                           |
 | **Network errors**                            | CI environment lacks outbound internet access.               | Ensure the runner can reach npmjs.org and eurekadevsecops.com endpoints.                                            |
 | **Invalid Node.js version**                    | Runner uses an incompatible Node version.                    | This action installs Node 22 automatically, but check logs to confirm setup-node succeeded.                         |
